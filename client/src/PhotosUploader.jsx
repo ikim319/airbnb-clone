@@ -5,26 +5,38 @@ export default function PhotosUploader({addedPhotos,onChange}) {
     const [photoLink,setPhotoLink] = useState('');
     async function addPhotoByLink(ev) {
         ev.preventDefault();
-        const {data:filename} = await axios.post('/upload-by-link', {link:photoLink});
-        onChange(prev => {
-            return [...prev, filename];
-        })
-        setPhotoLink('');
+        if (!photoLink) {
+            setError('Please enter a photo link.');
+            return;
+        }
+        try {
+            const { data: filename } = await axios.post('/upload-by-link', { link: photoLink });
+            onChange(prev => {
+                return [...prev, filename];
+            });
+            setPhotoLink('');
+        } catch (error) {
+            console.error('Failed to upload photo by link:', error);
+        }
     }
-    function uploadPhoto(ev) {
+
+    async function uploadPhoto(ev) {
         const files = ev.target.files;
         const data = new FormData();
         for (let i = 0; i < files.length; i++) {
             data.append('photos', files[i]);
         }
-        axios.post('/upload', data, {
-            headers: {'Content-type' : 'multipart/form-data'}
-        }).then(response => {
-            const {data:filenames} = response;
+        try {
+            const response = await axios.post('/upload', data, {
+                headers: { 'Content-Type': 'multipart/form-data' }
+            });
+            const { data: filenames } = response;
             onChange(prev => {
                 return [...prev, ...filenames];
-            })
-        })
+            });
+        } catch (error) {
+            console.error('Failed to upload photos:', error);
+        }
     }
     return (
         <>
