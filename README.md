@@ -1,2 +1,2 @@
 # airbnb-clone
-attempting to create a functional booking app using the MERN stack
+created a functional booking app using the MERN stack
