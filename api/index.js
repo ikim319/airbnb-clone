@@ -11,6 +11,7 @@ const app = express();
 const imageDownloader = require('image-downloader');
 const multer = require('multer');
 const fs = require('fs');
+const Booking = require('./models/Booking.js');
 
 const bcryptSalt = bcrypt.genSaltSync(10);
 const jwtSecret = 'fdiopquhoieuhfijkdsj2341';
@@ -162,6 +163,19 @@ app.put('/places/', async (req,res) => {
 
 app.get('/places', async (req,res) => {
     res.json( await Place.find() )
+});
+
+app.post('/bookings', (req,res) => {
+    const {
+        place,checkIn,checkOut,numberOfGuests,name,phone,price
+    } = req.body;
+    Booking.create({
+        place,checkIn,checkOut,numberOfGuests,name,phone,price
+    }).then((doc) => {
+        res.json(doc);
+    }).catch((err) => {
+        throw err;
+    })
 });
 
 app.listen(4000);
